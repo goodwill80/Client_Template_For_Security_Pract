@@ -8,7 +8,9 @@ import { RegisterAPI } from "../Util/API";
 
 function Register() {
   const [credentials, setCredentials] = useState({
+    name: "",
     email: "",
+    mobileNumber: "",
     pwd: "",
   });
 
@@ -54,6 +56,18 @@ function Register() {
             title={"Username"}
             value={credentials.email}
             name={"email"}
+            onChangeHandler={onChangeHandlerForRegistration}
+          />
+          <FormTextField
+            title={"Name"}
+            value={credentials.name}
+            name={"name"}
+            onChangeHandler={onChangeHandlerForRegistration}
+          />
+          <FormTextField
+            title={"Mobile Number"}
+            value={credentials.mobileNumber}
+            name={"mobileNumber"}
             onChangeHandler={onChangeHandlerForRegistration}
           />
           <FormTextField
