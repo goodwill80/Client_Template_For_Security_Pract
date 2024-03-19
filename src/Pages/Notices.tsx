@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import MainStyle from "../Components/MainStyle";
 import { Stack } from "@mui/material";
+import { getNoticesAPI } from "../Util/API";
+
+type NoticesStateType = {
+  createDt: string;
+  noticBegDt: string;
+  noticEndDt: string;
+  noticeDetails: string;
+  noticeId: string;
+  noticeSummary: string;
+  updateDt: null;
+};
 
 function Notices() {
-  const [notices, setNotices] = useState<string>("");
+  const [notices, setNotices] = useState<NoticesStateType[]>([]);
   const getNotices = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/notices");
-      console.log(response.data);
-      setNotices(response.data);
-    } catch (e) {
-      console.log(e);
-    }
+    const data = await getNoticesAPI();
+    setNotices(data);
   };
 
   useEffect(() => {
@@ -31,7 +36,15 @@ function Notices() {
         }}
       >
         <h1>Notices Page</h1>
-        <p>{notices}</p>
+        <ol>
+          {notices.map((notice, i) => {
+            return (
+              <>
+                <li>{notice.noticeDetails}</li>
+              </>
+            );
+          })}
+        </ol>
       </Stack>
     </MainStyle>
   );
