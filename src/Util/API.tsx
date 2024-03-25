@@ -12,7 +12,7 @@ const getAuthorizationFromLocalStorage = (): string | null => {
   const getFromLocalStorage = sessionStorage.getItem('userdetails');
   if (getFromLocalStorage) {
     const user = JSON.parse(getFromLocalStorage as string);
-    return 'Basic ' + btoa(user.email + ':' + user.password);
+    return 'Basic ' + btoa(user.email + ':' + user.pwd);
   } else {
     return null;
   }
@@ -39,20 +39,20 @@ const API = axios.create({
 // 'X-Requested-With', 'XMLHttpRequest';
 
 // To inject into header for all outgoing request
-// API.interceptors.request.use((config) => {
-//   if (sessionStorage.getItem('XSRF-TOKEN')) {
-//     config.headers['X-XSRF-TOKEN'] = sessionStorage.getItem('XSRF-TOKEN');
-//     config.headers['content-type'] = 'application/json';
-//     // config.headers['X-Requested-With'] = 'XMLHttpRequest';
-//   }
-//   if (sessionStorage.getItem('userdetails')) {
-//     config.headers['Authorization'] = getAuthorizationFromLocalStorage();
-//     config.headers['content-type'] = 'application/json';
-//     // config.headers['X-Requested-With'] = 'XMLHttpRequest';
-//   }
+API.interceptors.request.use((config) => {
+  if (sessionStorage.getItem('XSRF-TOKEN')) {
+    config.headers['X-XSRF-TOKEN'] = sessionStorage.getItem('XSRF-TOKEN');
+    config.headers['content-type'] = 'application/json';
+    // config.headers['X-Requested-With'] = 'XMLHttpRequest';
+  }
+  if (sessionStorage.getItem('userdetails')) {
+    config.headers['Authorization'] = getAuthorizationFromLocalStorage();
+    config.headers['content-type'] = 'application/json';
+    // config.headers['X-Requested-With'] = 'XMLHttpRequest';
+  }
 
-//   return config;
-// });
+  return config;
+});
 
 export const LoginAPI = async (user: {
   email: string;
@@ -65,15 +65,15 @@ export const LoginAPI = async (user: {
   user.authStatus = 'AUTH';
   window.sessionStorage.setItem('userdetails', JSON.stringify(user));
   try {
-    const getFromLocalStorage = sessionStorage.getItem('userdetails');
-    const user = JSON.parse(getFromLocalStorage as string);
+    // const getFromLocalStorage = sessionStorage.getItem('userdetails');
+    // const user = JSON.parse(getFromLocalStorage as string);
     const response = await API.get('/user', {
       withCredentials: true,
-      headers: {
-        Authorization: 'Basic ' + btoa(user.email + ':' + user.pwd),
-        'content-type': 'application/json',
-        // 'X-Requested-With': 'XMLHttpRequest',
-      },
+      // headers: {
+      //   Authorization: 'Basic ' + btoa(user.email + ':' + user.pwd),
+      //   'content-type': 'application/json',
+      //   // 'X-Requested-With': 'XMLHttpRequest',
+      // },
 
       // headers: {
       //   Authorization: getAuthorizationFromLocalStorage(),
