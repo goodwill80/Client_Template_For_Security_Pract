@@ -16,39 +16,22 @@ const getAuthorizationFromLocalStorage = (): string | null => {
   } else {
     return null;
   }
-
-  // const storedUser = localStorage.getItem("user");
-  // const parsedUser = JSON.parse(storedUser || "{}");
-  // return parsedUser.token;
 };
 
 // API Instance
 const API = axios.create({
   baseURL: 'http://localhost:8080',
-  // timeout: 70000,
-  // headers: {
-  // 'content-type': 'application/json',
-  // Authorization: getAuthorizationFromLocalStorage(),
-  // authorizationToken: getTokenFromLocalStorage(),
-  // 'X-XSRF-TOKEN': sessionStorage.getItem('XSRF-TOKEN') || '',
-  // },
 });
-
-// 'Authorization',
-//   'Basic ' + window.btoa(this.user.email + ':' + this.user.password);
-// 'X-Requested-With', 'XMLHttpRequest';
 
 // To inject into header for all outgoing request
 API.interceptors.request.use((config) => {
   if (sessionStorage.getItem('XSRF-TOKEN')) {
     config.headers['X-XSRF-TOKEN'] = sessionStorage.getItem('XSRF-TOKEN');
     config.headers['content-type'] = 'application/json';
-    // config.headers['X-Requested-With'] = 'XMLHttpRequest';
   }
   if (sessionStorage.getItem('userdetails')) {
     config.headers['Authorization'] = getAuthorizationFromLocalStorage();
     config.headers['content-type'] = 'application/json';
-    // config.headers['X-Requested-With'] = 'XMLHttpRequest';
   }
 
   return config;
@@ -59,32 +42,16 @@ export const LoginAPI = async (user: {
   pwd: string;
   authStatus: string | '';
 }) => {
-  // window.sessionStorage.setItem("userdetails", JSON.stringify(user));
-  // let xsrf = getCookie("XSRF-TOKEN")!;
-  // window.sessionStorage.setItem("XSRF-TOKEN", xsrf);
   user.authStatus = 'AUTH';
   window.sessionStorage.setItem('userdetails', JSON.stringify(user));
   try {
-    // const getFromLocalStorage = sessionStorage.getItem('userdetails');
-    // const user = JSON.parse(getFromLocalStorage as string);
     const response = await API.get('/user', {
       withCredentials: true,
-      // headers: {
-      //   Authorization: 'Basic ' + btoa(user.email + ':' + user.pwd),
-      //   'content-type': 'application/json',
-      //   // 'X-Requested-With': 'XMLHttpRequest',
-      // },
-
-      // headers: {
-      //   Authorization: getAuthorizationFromLocalStorage(),
-      //   'content-type': 'application/json, text/plain, */*',
-      // },
     });
-    console.log(response);
     const xsrf = getCookie('XSRF-TOKEN')!;
-    // window.sessionStorage.setItem('userdetails', JSON.stringify());
+    const userDetails = { ...response.data, authStatus: 'AUTH' };
+    window.sessionStorage.setItem('userdetails', JSON.stringify(userDetails));
     window.sessionStorage.setItem('XSRF-TOKEN', xsrf);
-    console.log(response);
     return response.data;
   } catch (e) {
     console.log(e);
